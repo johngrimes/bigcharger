@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:man="https://www.eway.com.au/gateway/managedpayment" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">
+   <env:Header>
+     <man:eWAYHeader>
+       <man:eWAYCustomerID>87654321</man:eWAYCustomerID>
+       <man:Username>test@eway.com.au</man:Username>
+       <man:Password>test123</man:Password>
+     </man:eWAYHeader>
+   </env:Header>
+   <env:Body>
+     <man:QueryCustomer>
+       <man:managedCustomerID>9876543211000</man:managedCustomerID>
+     </man:QueryCustomer>
+   </env:Body>
+ </env:Envelope>

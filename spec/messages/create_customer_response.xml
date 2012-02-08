@@ -1,0 +1,7 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:man="https://www.eway.com.au/gateway/managedpayment">
+  <soap:Body>
+    <man:CreateCustomerResponse>
+      <man:CreateCustomerResult>9876543211000</man:CreateCustomerResult>
+    </man:CreateCustomerResponse>
+  </soap:Body>
+</soap:Envelope>

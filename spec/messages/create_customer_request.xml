@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<env:Envelope xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:man="https://www.eway.com.au/gateway/managedpayment" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">
+  <env:Header>
+    <man:eWAYHeader>
+      <man:eWAYCustomerID>87654321</man:eWAYCustomerID>
+      <man:Username>test@eway.com.au</man:Username>
+      <man:Password>test123</man:Password>
+    </man:eWAYHeader>
+  </env:Header>
+  <env:Body>
+    <man:CreateCustomer>
+      <man:CustomerRef>Test 123</man:CustomerRef>
+      <man:CustomerTitle>Mr.</man:CustomerTitle>
+      <man:CustomerFirstName>Jo</man:CustomerFirstName>
+      <man:CustomerLastName>Smith</man:CustomerLastName>
+      <man:Company>company</man:Company>
+      <man:CustomerJobDesc>Analyst</man:CustomerJobDesc>
+      <man:CustomerEmail>test@eway.com.au</man:CustomerEmail>
+      <man:CustomerAddress>15 Dundas Court</man:CustomerAddress>
+      <man:CustomerSuburb>phillip</man:CustomerSuburb>
+      <man:CustomerState>act</man:CustomerState>
+      <man:CustomerPostCode>2606</man:CustomerPostCode>
+      <man:CustomerCountry>au</man:CustomerCountry>
+      <man:CustomerPhone1>02111111111</man:CustomerPhone1>
+      <man:CustomerPhone2>04111111111</man:CustomerPhone2>
+      <man:CustomerFax>111122222</man:CustomerFax>
+      <man:CustomerURL>http://eway.com.au</man:CustomerURL>
+      <man:CustomerComments>Comments</man:CustomerComments>
+      <man:CCName>Jo Smith</man:CCName>
+      <man:CCNumber>444433XXXXXX1111</man:CCNumber>
+      <man:CCExpiryMonth>08</man:CCExpiryMonth>
+      <man:CCExpiryYear>15</man:CCExpiryYear>
+    </man:CreateCustomer>
+  </env:Body>
+</env:Envelope>
