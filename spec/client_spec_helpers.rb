@@ -1,9 +1,26 @@
 module ClientSpecHelpers
-  def register_eway_uri(response_message)
+  def register_valid_response(response)
     FakeWeb.register_uri(
       :post, 
       'https://www.eway.com.au/gateway/ManagedPaymentService/managedCreditCardPayment.asmx', 
-      :body => message(response_message)
+      :body => message("#{response}_response".to_sym)
+    )
+  end
+
+  def register_fault_response
+    FakeWeb.register_uri(
+      :post, 
+      'https://www.eway.com.au/gateway/ManagedPaymentService/managedCreditCardPayment.asmx', 
+      :body => message(:fault_response),
+      :status => ['500', 'Internal Server Error']
+    )
+  end
+
+  def register_blank_response(code, message = '')
+    FakeWeb.register_uri(
+      :post, 
+      'https://www.eway.com.au/gateway/ManagedPaymentService/managedCreditCardPayment.asmx', 
+      :status => [code.to_s, message]
     )
   end
 

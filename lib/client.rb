@@ -8,6 +8,10 @@ HTTPI.log = false
 module Eway
   module TokenPayments
     class Client
+      ENDPOINT = 'https://www.eway.com.au/gateway/ManagedPaymentService/managedCreditCardPayment.asmx'
+      TEST_ENDPOINT = 'https://www.eway.com.au/gateway/ManagedPaymentService/test/managedCreditCardPayment.asmx'
+      NAMESPACE = 'https://www.eway.com.au/gateway/managedpayment'
+
       def initialize(customer_id, username, password)
         @credentials = { 
           'man:eWAYCustomerID' => customer_id,
@@ -15,20 +19,22 @@ module Eway
           'man:Password' => password
         }
         @client = Savon::Client.new do
-          wsdl.endpoint = 'https://www.eway.com.au/gateway/ManagedPaymentService/managedCreditCardPayment.asmx'
-          wsdl.namespace = 'https://www.eway.com.au/gateway/managedpayment'
+          wsdl.endpoint = ENDPOINT
+          wsdl.namespace = NAMESPACE
         end
       end
 
-      def create_customer(customer)
-        response = @client.request(:man, 'CreateCustomer') do |soap|
-          soap.header = { 'man:eWAYHeader' => @credentials }
-          soap.body = customer.inject({}) do |result, pair|
-            result["man:#{pair[0]}"] = pair[1]
-            result
+      def create_customer(customer = {})
+        handle_failure do
+          response = @client.request(:man, 'CreateCustomer') do |soap|
+            soap.header = { 'man:eWAYHeader' => @credentials }
+            soap.body = customer.inject({}) do |result, pair|
+              result["man:#{pair[0]}"] = pair[1]
+              result
+            end
           end
+          return response.to_hash[:create_customer_response][:create_customer_result]
         end
-        return response.to_hash[:create_customer_response][:create_customer_result]
       end
 
       def process_payment
@@ -38,11 +44,13 @@ module Eway
       end
 
       def query_customer(managed_customer_id)
-        response = @client.request(:man, 'QueryCustomer') do |soap|
-          soap.header = { 'man:eWAYHeader' => @credentials }
-          soap.body = { 'man:managedCustomerID' => 9876543211000 }
+        handle_failure do
+          response = @client.request(:man, 'QueryCustomer') do |soap|
+            soap.header = { 'man:eWAYHeader' => @credentials }
+            soap.body = { 'man:managedCustomerID' => managed_customer_id }
+          end
+          return response.to_hash[:query_customer_response][:query_customer_result]
         end
-        return response.to_hash[:query_customer_response][:query_customer_result]
       end
 
       def query_customer_by_reference
@@ -53,6 +61,26 @@ module Eway
 
       def update_customer
       end
+
+      private
+
+      def handle_failure
+        yield
+      rescue Savon::HTTP::Error => e
+        raise_failure_code_error(e)
+      rescue Savon::SOAP::Fault => e
+        raise_soap_error(e)
+      end
+
+      def raise_failure_code_error(e)
+        raise Error, "eWAY server responded with \"#{e.message}\" (#{e.http.code})"
+      end
+
+      def raise_soap_error(e)
+        raise Error, e.message.gsub('(soap:Client)', '').strip
+      end
     end
+
+    class Error < Exception; end
   end
 end
