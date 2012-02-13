@@ -1,14 +1,11 @@
 require 'rubygems'
-require './spec/client_spec_helpers.rb'
-require './lib/client.rb'
+require './spec/client_spec_helpers'
+require './lib/client'
 require 'bundler'
 Bundler.setup(:default, :test)
 
 require 'fakeweb'
 require 'equivalent-xml'
-require 'ruby-debug'
-require 'pry'
-require 'ruby-debug/pry'
 
 describe Eway::TokenPayments::Client do
   include ClientSpecHelpers
@@ -19,7 +16,6 @@ describe Eway::TokenPayments::Client do
     @username = 'test@eway.com.au'
     @password = 'test123'
     @test_customer_id = '9876543211000'
-    @namespaces = { 'man' => Eway::TokenPayments::Client::NAMESPACE }
     @client = Eway::TokenPayments::Client.new(@customer_id, @username, @password)
   end
 
@@ -57,6 +53,10 @@ describe Eway::TokenPayments::Client do
 
       it 'should make a request to the eWAY endpoint' do
         @request.should_not be_nil
+      end
+
+      it 'should use the correct SOAPAction header' do
+        @request['SOAPAction'].should == "#{Eway::TokenPayments::Client::NAMESPACE}/CreateCustomer"
       end
 
       it 'should pass the correct content within the request' do
@@ -97,6 +97,10 @@ describe Eway::TokenPayments::Client do
 
       it 'should make a request to the eWAY endpoint' do
         @request.should_not be_nil
+      end
+
+      it 'should use the correct SOAPAction header' do
+        @request['SOAPAction'].should == "#{Eway::TokenPayments::Client::NAMESPACE}/QueryCustomer"
       end
 
       it 'should pass the correct content within the request' do

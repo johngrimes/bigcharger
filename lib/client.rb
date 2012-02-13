@@ -12,21 +12,22 @@ module Eway
       TEST_ENDPOINT = 'https://www.eway.com.au/gateway/ManagedPaymentService/test/managedCreditCardPayment.asmx'
       NAMESPACE = 'https://www.eway.com.au/gateway/managedpayment'
 
-      def initialize(customer_id, username, password)
+      def initialize(customer_id, username, password, test_mode = false)
         @credentials = { 
           'man:eWAYCustomerID' => customer_id,
           'man:Username' => username,
           'man:Password' => password
         }
         @client = Savon::Client.new do
-          wsdl.endpoint = ENDPOINT
+          wsdl.endpoint = test_mode ? TEST_ENDPOINT : ENDPOINT
           wsdl.namespace = NAMESPACE
         end
       end
 
       def create_customer(customer = {})
         handle_failure do
-          response = @client.request(:man, 'CreateCustomer') do |soap|
+          response = @client.request(:man, "CreateCustomer") do |soap, wsdl, http|
+            http.headers['SOAPAction'] = "#{NAMESPACE}/CreateCustomer"
             soap.header = { 'man:eWAYHeader' => @credentials }
             soap.body = customer.inject({}) do |result, pair|
               result["man:#{pair[0]}"] = pair[1]
@@ -45,7 +46,8 @@ module Eway
 
       def query_customer(managed_customer_id)
         handle_failure do
-          response = @client.request(:man, 'QueryCustomer') do |soap|
+          response = @client.request(:man, 'QueryCustomer') do |soap, wsdl, http|
+            http.headers['SOAPAction'] = "#{NAMESPACE}/QueryCustomer"
             soap.header = { 'man:eWAYHeader' => @credentials }
             soap.body = { 'man:managedCustomerID' => managed_customer_id }
           end
