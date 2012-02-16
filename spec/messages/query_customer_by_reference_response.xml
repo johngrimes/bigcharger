@@ -1,0 +1,30 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<soap:Body>
+  <QueryCustomerByReferenceResponse xmlns="https://www.eway.com.au/gateway/managedpayment">
+    <QueryCustomerByReferenceResult>
+      <ManagedCustomerID>9876543211000</ManagedCustomerID>
+      <CustomerRef>TEST 123</CustomerRef>
+      <CustomerTitle>Mr.</CustomerTitle>
+      <CustomerFirstName>Jo</CustomerFirstName>
+      <CustomerLastName>Smith</CustomerLastName>
+      <CustomerCompany>company</CustomerCompany>
+      <CustomerJobDesc/>
+      <CustomerEmail>test@eway.com.au</CustomerEmail>
+      <CustomerAddress>15 Dundas Court</CustomerAddress>
+      <CustomerSuburb>phillip</CustomerSuburb>
+      <CustomerState>act</CustomerState>
+      <CustomerPostCode>2606</CustomerPostCode>
+      <CustomerCountry>au</CustomerCountry>
+      <CustomerPhone1>02111111111</CustomerPhone1>
+      <CustomerPhone2>04111111111</CustomerPhone2>
+      <CustomerFax>111122222</CustomerFax>
+      <CustomerURL>http://eway.com.au</CustomerURL>
+      <CustomerComments>Comments</CustomerComments>
+      <CCName>Jo Smith</CCName>
+      <CCNumber>444433XXXXXX1111</CCNumber>
+      <CCExpiryMonth>08</CCExpiryMonth>
+      <CCExpiryYear>15</CCExpiryYear>
+    </QueryCustomerByReferenceResult>
+  </QueryCustomerByReferenceResponse>
+</soap:Body>
+</soap:Envelope>

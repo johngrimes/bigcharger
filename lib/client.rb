@@ -73,7 +73,15 @@ module Eway
         return result ? node_to_hash(result) : false
       end
 
-      def query_customer_by_reference
+      def query_customer_by_reference(customer_ref)
+        envelope = wrap_in_envelope do |xml|
+          xml['man'].QueryCustomerByReference {
+            xml['man'].CustomerReference customer_ref
+          }
+        end
+        response = post(envelope, 'QueryCustomerByReference')
+        result = response.xpath('//man:QueryCustomerByReferenceResult', { 'man' => @config['soap']['service_namespace'] }).first
+        return result ? node_to_hash(result) : false
       end
 
       def query_payment

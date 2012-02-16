@@ -11,6 +11,7 @@ describe Eway::TokenPayments::Client do
     @username = 'test@eway.com.au'
     @password = 'test123'
     @test_customer_id = '9876543211000'
+    @test_customer_ref = 'Test 123'
     @client = Eway::TokenPayments::Client.new(@customer_id, @username, @password)
     @endpoint = @client.config['soap']['endpoint']
     @namespace = @client.config['soap']['service_namespace']
@@ -337,6 +338,91 @@ describe Eway::TokenPayments::Client do
             )
         expect {
           @client.query_customer(@test_customer_id)
+        }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Bad Request" (400)')
+      end
+    end
+  end
+
+  describe '#query_customer_by_reference' do
+    describe 'success scenarios' do
+      after(:all) { WebMock.reset! }
+
+      it 'should make a request to the eWAY endpoint' do
+        stub_request(:post, @endpoint)
+            .to_return(
+              :status => 200,
+              :body => message(:query_customer_by_reference_response)
+            )
+        @client.query_customer_by_reference(@test_customer_ref)
+      end
+
+      it 'should use the correct headers' do
+        stub_request(:post, @endpoint)
+            .with(:headers => { 
+              'SOAPAction' => "#{@namespace}/QueryCustomerByReference",
+              'Content-Type' => 'text/xml'
+            })
+        @client.query_customer_by_reference(@test_customer_ref)
+      end
+
+      it 'should pass the correct content within the request' do
+        stub_request(:post, @endpoint)
+            .with(:body => message(:query_customer_by_reference_request))
+        @client.query_customer_by_reference(@test_customer_ref)
+      end
+
+      it 'should return the correct response' do
+        stub_request(:post, @endpoint)
+            .to_return(
+              :status => 200,
+              :body => message(:query_customer_by_reference_response)
+            )
+        response = @client.query_customer_by_reference(@test_customer_ref)
+
+        response['ManagedCustomerID'].should == '9876543211000'
+        response['CustomerRef'].should == 'TEST 123'
+        response['CustomerTitle'].should == 'Mr.'
+        response['CustomerFirstName'].should == 'Jo'
+        response['CustomerLastName'].should == 'Smith'
+        response['CustomerCompany'].should == 'company'
+        response['CustomerJobDesc'].should be_nil
+        response['CustomerEmail'].should == 'test@eway.com.au'
+        response['CustomerAddress'].should == '15 Dundas Court'
+        response['CustomerSuburb'].should == 'phillip'
+        response['CustomerState'].should == 'act'
+        response['CustomerPostCode'].should == '2606'
+        response['CustomerCountry'].should == 'au'
+        response['CustomerPhone1'].should == '02111111111'
+        response['CustomerPhone2'].should == '04111111111'
+        response['CustomerFax'].should == '111122222'
+        response['CustomerURL'].should == 'http://eway.com.au'
+        response['CustomerComments'].should == 'Comments'
+        response['CCName'].should == 'Jo Smith'
+        response['CCNumber'].should == '444433XXXXXX1111'
+        response['CCExpiryMonth'].should == '08'
+        response['CCExpiryYear'].should == '15'
+      end
+    end
+
+    describe 'failure scenarios' do
+      it 'should raise an error when a fault is returned' do
+        stub_request(:post, @endpoint)
+            .to_return(
+              :status => [500, 'Internal Server Error'],
+              :body => message(:fault_response)
+            )
+        expect {
+          @client.query_customer_by_reference(@test_customer_ref)
+        }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Login failed." (soap:Client)')
+      end
+
+      it 'should raise an error when the server returns a failure response code' do
+        stub_request(:post, @endpoint)
+            .to_return(
+              :status => [400, 'Bad Request']
+            )
+        expect {
+          @client.query_customer_by_reference(@test_customer_ref)
         }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Bad Request" (400)')
       end
     end
