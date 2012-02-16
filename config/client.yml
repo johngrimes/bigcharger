@@ -1,0 +1,31 @@
+soap:
+  soap_namespace: http://schemas.xmlsoap.org/soap/envelope/
+  service_namespace: https://www.eway.com.au/gateway/managedpayment
+  endpoint: https://www.eway.com.au/gateway/ManagedPaymentService/managedCreditCardPayment.asmx
+  test_endpoint: https://www.eway.com.au/gateway/ManagedPaymentService/test/managedCreditCardPayment.asmx
+
+fields:
+  create_customer:
+    - Title
+    - FirstName
+    - LastName
+    - Address
+    - Suburb
+    - State
+    - Company
+    - PostCode
+    - Country
+    - Email
+    - Fax
+    - Phone
+    - Mobile
+    - CustomerRef
+    - JobDesc
+    - Comments
+    - URL
+    - CCNumber
+    - CCNameOnCard
+    - CCExpiryMonth
+    - CCExpiryYear
+  query_customer:
+    - managedCustomerID

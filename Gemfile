@@ -1,14 +1,14 @@
 source :rubygems
 
-gem 'savon'
+gem 'nokogiri'
+gem 'curb'
 
-group :test do
+group :development do
   gem 'rspec'
   gem 'thor'
-  gem 'fakeweb'
-  gem 'nokogiri'
+  gem 'webmock'
   gem 'equivalent-xml'
-  gem 'ruby-debug19'
+
+  # DEBUG
   gem 'pry'
-  gem 'ruby-debug-pry', :require => 'ruby-debug/pry'
 end
