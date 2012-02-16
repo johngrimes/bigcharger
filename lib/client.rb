@@ -95,7 +95,18 @@ module Eway
         return result ? node_collection_to_array(result) : false
       end
 
-      def update_customer
+      def update_customer(managed_customer_id, customer_fields = {})
+        envelope = wrap_in_envelope do |xml|
+          xml['man'].UpdateCustomer {
+            xml['man'].managedCustomerID managed_customer_id
+            @config['fields']['update_customer'].each do |field|
+              xml['man'].send(field, customer_fields[field]) if customer_fields[field]
+            end
+          }
+        end
+        response = post(envelope, 'UpdateCustomer')
+        result = response.xpath('//man:UpdateCustomerResult', { 'man' => @config['soap']['service_namespace'] }).first
+        return result ? result.text == 'true' : false
       end
 
       private

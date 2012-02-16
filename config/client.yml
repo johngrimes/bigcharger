@@ -27,5 +27,25 @@ fields:
     - CCNameOnCard
     - CCExpiryMonth
     - CCExpiryYear
-  query_customer:
-    - managedCustomerID
+  update_customer:
+    - Title
+    - FirstName
+    - LastName
+    - Address
+    - Suburb
+    - State
+    - Company
+    - PostCode
+    - Country
+    - Email
+    - Fax
+    - Phone
+    - Mobile
+    - CustomerRef
+    - JobDesc
+    - Comments
+    - URL
+    - CCNumber
+    - CCNameOnCard
+    - CCExpiryMonth
+    - CCExpiryYear

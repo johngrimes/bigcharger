@@ -501,4 +501,93 @@ describe Eway::TokenPayments::Client do
       end
     end
   end
+
+  describe '#update_customer' do
+    before(:all) do
+      @customer = {
+        'CustomerRef' => 'Test 123',
+        'Title' => 'Mr.',
+        'FirstName' => 'Jo',
+        'LastName' => 'Smith',
+        'Company' => 'company',
+        'JobDesc' => 'Analyst',
+        'Email' => 'test@eway.com.au',
+        'Address' => '15 Dundas Court',
+        'Suburb' => 'phillip',
+        'State' => 'act',
+        'PostCode' => '2606',
+        'Country' => 'au',
+        'Phone' => '02111111111',
+        'Mobile' => '04111111111',
+        'Fax' => '111122222',
+        'URL' => 'http://eway.com.au',
+        'Comments' => 'Comments',
+        'CCNameOnCard' => 'Jo Smith',
+        'CCNumber' => '444433XXXXXX1111',
+        'CCExpiryMonth' => '08',
+        'CCExpiryYear' => '15'
+      }
+    end
+
+    describe 'success scenario' do
+      after(:all) { WebMock.reset! }
+
+      it 'should make a request to the eWAY endpoint' do
+        stub_request(:post, @endpoint)
+            .to_return(
+              :status => 200,
+              :body => message(:update_customer_response)
+            )
+        @client.update_customer(@test_customer_id, @customer)
+      end
+
+      it 'should use the correct headers' do
+        stub_request(:post, @endpoint)
+            .with(:headers => { 
+              'SOAPAction' => "#{@namespace}/UpdateCustomer",
+              'Content-Type' => 'text/xml'
+            })
+        @client.update_customer(@test_customer_id, @customer)
+      end
+
+      it 'should pass the correct content within the request' do
+        stub_request(:post, @endpoint)
+            .with(:body => message(:update_customer_request))
+        @client.update_customer(@test_customer_id, @customer)
+      end
+
+      it 'should return the correct response' do
+        stub_request(:post, @endpoint)
+            .to_return(
+              :status => 200,
+              :body => message(:update_customer_response)
+            )
+        response = @client.update_customer(@test_customer_id, @customer)
+        response.should be_true
+      end
+    end
+
+    describe 'failure scenarios' do
+      it 'should raise an error when a fault is returned' do
+        stub_request(:post, @endpoint)
+            .to_return(
+              :status => [500, 'Internal Server Error'],
+              :body => message(:fault_response)
+            )
+        expect {
+          @client.update_customer(@test_customer_id, @customer)
+        }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Login failed." (soap:Client)')
+      end
+
+      it 'should raise an error when the server returns a failure response code' do
+        stub_request(:post, @endpoint)
+            .to_return(
+              :status => [400, 'Bad Request']
+            )
+        expect {
+          @client.update_customer(@test_customer_id, @customer)
+        }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Bad Request" (400)')
+      end
+    end
+  end
 end
