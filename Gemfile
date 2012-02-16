@@ -2,6 +2,7 @@ source :rubygems
 
 gem 'nokogiri'
 gem 'curb'
+gem 'credit_card_validator'
 
 group :development do
   gem 'rspec'

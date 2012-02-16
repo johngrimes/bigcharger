@@ -9,7 +9,7 @@ module Eway
       attr_accessor :logger
 
       def initialize(customer_id, username, password, test_mode = false)
-        @config = YAML::load(File.open('config/client.yml'))
+        @config = YAML::load(File.open(File.expand_path('../../config/client.yml', __FILE__)))
         @credentials = { 
           :customer_id => customer_id,
           :username => username,

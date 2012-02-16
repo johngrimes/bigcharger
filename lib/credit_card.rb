@@ -40,7 +40,7 @@ module Eway
     def to_hash
       { 
         :name => @name,
-        :number = @number,
+        :number => @number,
         :expiry_month => @expiry_month,
         :expiry_year => @expiry_year
       }

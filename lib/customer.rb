@@ -1,5 +1,5 @@
-require 'credit_card.rb'
-require 'service.rb'
+require File.dirname(__FILE__) + '/client'
+require File.dirname(__FILE__) + '/credit_card'
 
 module Eway
   class << self
@@ -80,7 +80,7 @@ module Eway
       private
 
       def Customer.client
-        @@client ||= Client.new(Eway.credentials)
+        @@client ||= Client.new(Eway.credentials[:customer_id], Eway.credentials[:username], Eway.credentials[:password])
       end
 
       def Customer.response_to_customer(response)

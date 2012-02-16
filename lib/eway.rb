@@ -1,4 +1,4 @@
 require 'bundler'
 Bundler.setup(:default)
 
-require 'customer.rb'
+require File.dirname(__FILE__) + '/customer'
