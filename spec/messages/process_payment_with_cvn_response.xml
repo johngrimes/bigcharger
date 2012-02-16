@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <soap:Body>
+    <ProcessPaymentWithCVNResponse xmlns="https://www.eway.com.au/gateway/managedpayment">
+      <ewayResponse>
+        <ewayTrxnError>00,Transaction Approved(Test CVN Gateway)</ewayTrxnError>
+        <ewayTrxnStatus>True</ewayTrxnStatus>
+        <ewayTrxnNumber>21803</ewayTrxnNumber>
+        <ewayReturnAmount>1000</ewayReturnAmount>
+        <ewayAuthCode>123456</ewayAuthCode>
+      </ewayResponse>
+    </ProcessPaymentWithCVNResponse>
+  </soap:Body>
+</soap:Envelope>

@@ -47,7 +47,19 @@ module Eway
         return result ? node_to_hash(result) : false
       end
 
-      def process_payment_with_cvn
+      def process_payment_with_cvn(managed_customer_id, amount, cvn = nil, invoice_ref = nil, invoice_desc = nil)
+        envelope = wrap_in_envelope do |xml|
+          xml['man'].ProcessPaymentWithCVN {
+            xml['man'].managedCustomerID managed_customer_id
+            xml['man'].amount amount
+            xml['man'].invoiceReference invoice_ref if invoice_ref
+            xml['man'].invoiceDescription invoice_desc if invoice_desc
+            xml['man'].cvn cvn if cvn
+          }
+        end
+        response = post(envelope, 'ProcessPaymentWithCVN')
+        result = response.xpath('//man:ProcessPaymentWithCVNResponse/man:ewayResponse', { 'man' => @config['soap']['service_namespace'] }).first
+        return result ? node_to_hash(result) : false
       end
 
       def query_customer(managed_customer_id)
