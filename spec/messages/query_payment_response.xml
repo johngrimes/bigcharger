@@ -1,0 +1,22 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <soap:Body>
+    <QueryPaymentResponse xmlns="https://www.eway.com.au/gateway/managedpayment">
+      <QueryPaymentResult>
+        <ManagedTransaction>
+          <TotalAmount>1000</TotalAmount>
+          <Result>1</Result>
+          <ResponseText>Approved</ResponseText>
+          <TransactionDate>2012-02-16T00:00:00+11:00</TransactionDate>
+          <ewayTrxnNumber>1</ewayTrxnNumber>
+        </ManagedTransaction>
+        <ManagedTransaction>
+          <TotalAmount>1008</TotalAmount>
+          <Result>1</Result>
+          <ResponseText>Approved</ResponseText>
+          <TransactionDate>2012-02-16T00:00:00+11:00</TransactionDate>
+          <ewayTrxnNumber>2</ewayTrxnNumber>
+        </ManagedTransaction>
+      </QueryPaymentResult>
+    </QueryPaymentResponse>
+  </soap:Body>
+</soap:Envelope>

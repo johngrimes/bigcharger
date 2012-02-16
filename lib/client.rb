@@ -84,7 +84,15 @@ module Eway
         return result ? node_to_hash(result) : false
       end
 
-      def query_payment
+      def query_payment(managed_customer_id)
+        envelope = wrap_in_envelope do |xml|
+          xml['man'].QueryPayment {
+            xml['man'].managedCustomerID managed_customer_id
+          }
+        end
+        response = post(envelope, 'QueryPayment')
+        result = response.xpath('//man:QueryPaymentResult', { 'man' => @config['soap']['service_namespace'] }).first
+        return result ? node_collection_to_array(result) : false
       end
 
       def update_customer
@@ -183,9 +191,21 @@ module Eway
       def node_to_hash(node)
         hash = {}
         node.children.each do |node|
-          hash[node.name] = node.text.empty? ? nil : node.text
+          if node.type == Nokogiri::XML::Node::ELEMENT_NODE
+            hash[node.name] = node.text.empty? ? nil : node.text
+          end
         end
         return hash
+      end
+
+      def node_collection_to_array(node)
+        array = []
+        node.children.each do |node|
+          if node.type == Nokogiri::XML::Node::ELEMENT_NODE
+            array << node_to_hash(node)
+          end
+        end
+        return array
       end
     end
 

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:man="https://www.eway.com.au/gateway/managedpayment">
+  <soap:Header>
+    <man:eWAYHeader>
+      <man:eWAYCustomerID>87654321</man:eWAYCustomerID>
+      <man:Username>test@eway.com.au</man:Username>
+      <man:Password>test123</man:Password>
+    </man:eWAYHeader>
+  </soap:Header>
+  <soap:Body>
+    <man:QueryPayment>
+      <man:managedCustomerID>9876543211000</man:managedCustomerID>
+    </man:QueryPayment>
+  </soap:Body>
+</soap:Envelope>

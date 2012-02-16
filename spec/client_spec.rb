@@ -427,4 +427,78 @@ describe Eway::TokenPayments::Client do
       end
     end
   end
+
+  describe '#query_payment' do
+    describe 'success scenarios' do
+      after(:all) { WebMock.reset! }
+
+      it 'should make a request to the eWAY endpoint' do
+        stub_request(:post, @endpoint)
+            .to_return(
+              :status => 200,
+              :body => message(:query_payment_response)
+            )
+        @client.query_payment(@test_customer_id)
+      end
+
+      it 'should use the correct headers' do
+        stub_request(:post, @endpoint)
+            .with(:headers => { 
+              'SOAPAction' => "#{@namespace}/QueryPayment",
+              'Content-Type' => 'text/xml'
+            })
+        @client.query_payment(@test_customer_id)
+      end
+
+      it 'should pass the correct content within the request' do
+        stub_request(:post, @endpoint)
+            .with(:body => message(:query_payment_request))
+        @client.query_payment(@test_customer_id)
+      end
+
+      it 'should return the correct response' do
+        stub_request(:post, @endpoint)
+            .to_return(
+              :status => 200,
+              :body => message(:query_payment_response)
+            )
+        response = @client.query_payment(@test_customer_id)
+
+        response.size.should == 2
+        response[0]['TotalAmount'].should == '1000'
+        response[0]['Result'].should == '1'
+        response[0]['ResponseText'].should == 'Approved'
+        response[0]['TransactionDate'].should == '2012-02-16T00:00:00+11:00'
+        response[0]['ewayTrxnNumber'].should == '1'
+        response[1]['TotalAmount'].should == '1008'
+        response[1]['Result'].should == '1'
+        response[1]['ResponseText'].should == 'Approved'
+        response[1]['TransactionDate'].should == '2012-02-16T00:00:00+11:00'
+        response[1]['ewayTrxnNumber'].should == '2'
+      end
+    end
+
+    describe 'failure scenarios' do
+      it 'should raise an error when a fault is returned' do
+        stub_request(:post, @endpoint)
+            .to_return(
+              :status => [500, 'Internal Server Error'],
+              :body => message(:fault_response)
+            )
+        expect {
+          @client.query_payment(@test_customer_id)
+        }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Login failed." (soap:Client)')
+      end
+
+      it 'should raise an error when the server returns a failure response code' do
+        stub_request(:post, @endpoint)
+            .to_return(
+              :status => [400, 'Bad Request']
+            )
+        expect {
+          @client.query_payment(@test_customer_id)
+        }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Bad Request" (400)')
+      end
+    end
+  end
 end
