@@ -4,6 +4,7 @@ require File.dirname(__FILE__) + '/credit_card'
 module Eway
   class << self
     attr_accessor :credentials
+    attr_accessor :test_mode
   end
 
   module TokenPayments
@@ -80,7 +81,7 @@ module Eway
       private
 
       def Customer.client
-        @@client ||= Client.new(Eway.credentials[:customer_id], Eway.credentials[:username], Eway.credentials[:password])
+        @@client ||= Client.new(Eway.credentials[:customer_id], Eway.credentials[:username], Eway.credentials[:password], Eway.test_mode ? true : false)
       end
 
       def Customer.response_to_customer(response)
