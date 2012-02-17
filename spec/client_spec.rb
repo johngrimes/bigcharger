@@ -1,5 +1,5 @@
-require './spec/client_spec_helpers'
-require './lib/client'
+require File.dirname(__FILE__) + '/spec_helper'
+require File.dirname(__FILE__) + '/../lib/eway'
 
 require 'logger'
 
@@ -13,8 +13,8 @@ describe Eway::TokenPayments::Client do
     @test_customer_id = '9876543211000'
     @test_customer_ref = 'Test 123'
     @client = Eway::TokenPayments::Client.new(@customer_id, @username, @password)
-    @endpoint = @client.config['soap']['endpoint']
-    @namespace = @client.config['soap']['service_namespace']
+    @endpoint = Eway.config['client']['endpoint']
+    @namespace = Eway.config['client']['service_namespace']
     
     # DEBUG
     # @client.logger = Logger.new(STDOUT)

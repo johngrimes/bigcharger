@@ -6,34 +6,34 @@ module Eway
   module TokenPayments
     class Client
       attr_reader :config
-      attr_accessor :logger
 
       def initialize(customer_id, username, password, test_mode = false)
-        @config = YAML::load(File.open(File.expand_path('../../config/client.yml', __FILE__)))
         @credentials = { 
           :customer_id => customer_id,
           :username => username,
           :password => password
         }
-        @endpoint = test_mode ? @config['soap']['test_endpoint'] : @config['soap']['endpoint']
+        @endpoint = test_mode ? Eway.config['client']['test_endpoint'] : Eway.config['client']['endpoint']
         @client = Curl::Easy.new
         set_request_defaults
       end
 
       def create_customer(customer_fields = {})
+        Eway.logger.debug "Eway::TokenPayments::Client#create_customer called with customer_fields = #{customer_fields.inspect}"
         envelope = wrap_in_envelope do |xml|
           xml['man'].CreateCustomer {
-            @config['fields']['create_customer'].each do |field|
+            Eway.config['request_fields']['create_customer'].each do |field|
               xml['man'].send(field, customer_fields[field]) if customer_fields[field]
             end
           }
         end
         response = post(envelope, 'CreateCustomer')
-        result = response.xpath('//man:CreateCustomerResult', { 'man' => @config['soap']['service_namespace'] }).first
+        result = response.xpath('//man:CreateCustomerResult', { 'man' => Eway.config['client']['service_namespace'] }).first
         return result ? result.text : false
       end
 
       def process_payment(managed_customer_id, amount, invoice_ref = nil, invoice_desc = nil)
+        Eway.logger.debug "Eway::TokenPayments::Client#process_payment called with managed_customer_id = #{managed_customer_id}, amount = #{amount}, invoice_ref = #{invoice_ref}, invoice_desc = #{invoice_desc}"
         envelope = wrap_in_envelope do |xml|
           xml['man'].ProcessPayment {
             xml['man'].managedCustomerID managed_customer_id
@@ -43,11 +43,12 @@ module Eway
           }
         end
         response = post(envelope, 'ProcessPayment')
-        result = response.xpath('//man:ProcessPaymentResponse/man:ewayResponse', { 'man' => @config['soap']['service_namespace'] }).first
+        result = response.xpath('//man:ProcessPaymentResponse/man:ewayResponse', { 'man' => Eway.config['client']['service_namespace'] }).first
         return result ? node_to_hash(result) : false
       end
 
       def process_payment_with_cvn(managed_customer_id, amount, cvn = nil, invoice_ref = nil, invoice_desc = nil)
+        Eway.logger.debug "Eway::TokenPayments::Client#process_payment_with_cvn called with managed_customer_id = #{managed_customer_id}, amount = #{amount}, cvn = #{cvn}, invoice_ref = #{invoice_ref}, invoice_desc = #{invoice_desc}"
         envelope = wrap_in_envelope do |xml|
           xml['man'].ProcessPaymentWithCVN {
             xml['man'].managedCustomerID managed_customer_id
@@ -58,54 +59,58 @@ module Eway
           }
         end
         response = post(envelope, 'ProcessPaymentWithCVN')
-        result = response.xpath('//man:ProcessPaymentWithCVNResponse/man:ewayResponse', { 'man' => @config['soap']['service_namespace'] }).first
+        result = response.xpath('//man:ProcessPaymentWithCVNResponse/man:ewayResponse', { 'man' => Eway.config['client']['service_namespace'] }).first
         return result ? node_to_hash(result) : false
       end
 
       def query_customer(managed_customer_id)
+        Eway.logger.debug "Eway::TokenPayments::Client#query_customer called with managed_customer_id = #{managed_customer_id}"
         envelope = wrap_in_envelope do |xml|
           xml['man'].QueryCustomer {
             xml['man'].managedCustomerID managed_customer_id
           }
         end
         response = post(envelope, 'QueryCustomer')
-        result = response.xpath('//man:QueryCustomerResult', { 'man' => @config['soap']['service_namespace'] }).first
+        result = response.xpath('//man:QueryCustomerResult', { 'man' => Eway.config['client']['service_namespace'] }).first
         return result ? node_to_hash(result) : false
       end
 
       def query_customer_by_reference(customer_ref)
+        Eway.logger.debug "Eway::TokenPayments::Client#query_customer_by_reference called with customer_ref = #{customer_ref}"
         envelope = wrap_in_envelope do |xml|
           xml['man'].QueryCustomerByReference {
             xml['man'].CustomerReference customer_ref
           }
         end
         response = post(envelope, 'QueryCustomerByReference')
-        result = response.xpath('//man:QueryCustomerByReferenceResult', { 'man' => @config['soap']['service_namespace'] }).first
+        result = response.xpath('//man:QueryCustomerByReferenceResult', { 'man' => Eway.config['client']['service_namespace'] }).first
         return result ? node_to_hash(result) : false
       end
 
       def query_payment(managed_customer_id)
+        Eway.logger.debug "Eway::TokenPayments::Client#query_payment called with managed_customer_id = #{managed_customer_id}"
         envelope = wrap_in_envelope do |xml|
           xml['man'].QueryPayment {
             xml['man'].managedCustomerID managed_customer_id
           }
         end
         response = post(envelope, 'QueryPayment')
-        result = response.xpath('//man:QueryPaymentResult', { 'man' => @config['soap']['service_namespace'] }).first
+        result = response.xpath('//man:QueryPaymentResult', { 'man' => Eway.config['client']['service_namespace'] }).first
         return result ? node_collection_to_array(result) : false
       end
 
       def update_customer(managed_customer_id, customer_fields = {})
+        Eway.logger.debug "Eway::TokenPayments::Client#update_customer called with managed_customer_id = #{managed_customer_id}, customer_fields = #{customer_fields.inspect}"
         envelope = wrap_in_envelope do |xml|
           xml['man'].UpdateCustomer {
             xml['man'].managedCustomerID managed_customer_id
-            @config['fields']['update_customer'].each do |field|
+            Eway.config['request_fields']['update_customer'].each do |field|
               xml['man'].send(field, customer_fields[field]) if customer_fields[field]
             end
           }
         end
         response = post(envelope, 'UpdateCustomer')
-        result = response.xpath('//man:UpdateCustomerResult', { 'man' => @config['soap']['service_namespace'] }).first
+        result = response.xpath('//man:UpdateCustomerResult', { 'man' => Eway.config['client']['service_namespace'] }).first
         return result ? result.text == 'true' : false
       end
 
@@ -119,8 +124,8 @@ module Eway
 
       def wrap_in_envelope(&block)
         envelope = Nokogiri::XML::Builder.new do |xml|
-          xml.Envelope('xmlns:soap' => @config['soap']['soap_namespace'],
-              'xmlns:man' => @config['soap']['service_namespace']) {
+          xml.Envelope('xmlns:soap' => Eway.config['client']['soap_namespace'],
+              'xmlns:man' => Eway.config['client']['service_namespace']) {
             xml.parent.namespace = xml.parent.namespace_definitions.find { |ns| ns.prefix == 'soap' }
             xml['soap'].Header {
               xml['man'].eWAYHeader {
@@ -137,7 +142,7 @@ module Eway
       end
 
       def post(envelope, action_name)
-        @client.headers['SOAPAction'] = "#{@config['soap']['service_namespace']}/#{action_name}"
+        @client.headers['SOAPAction'] = "#{Eway.config['client']['service_namespace']}/#{action_name}"
         record_request(@client, envelope.to_xml)
         @client.http_post @last_request[:body]
         log_last_request
@@ -162,27 +167,23 @@ module Eway
       end
 
       def log_last_request
-        if @logger
-          header_output = @last_request[:headers].map { |k,v| "#{k}: #{v}" }.join("\n")
-          log_string = "Eway::TokenPayments::Client - Request sent\n"
-          log_string << "#{header_output}\n#{@last_request[:body]}"
-          @logger.info log_string
-        end
+        header_output = @last_request[:headers].map { |k,v| "#{k}: #{v}" }.join("\n")
+        log_string = "Eway::TokenPayments::Client - Request sent\n"
+        log_string << "#{header_output}\n#{@last_request[:body]}"
+        Eway.logger.debug log_string
       end
 
       def log_last_response
-        if @logger
-          body_output = @last_response[:body_document].serialize(:encoding => 'UTF-8') do |config|
-            config.format.as_xml
-          end
-          log_string = "Eway::TokenPayments::Client - Response received\n"
-          log_string << "#{@last_response[:header_string]}\n#{body_output}"
-          @logger.info log_string
+        body_output = @last_response[:body_document].serialize(:encoding => 'UTF-8') do |config|
+          config.format.as_xml
         end
+        log_string = "Eway::TokenPayments::Client - Response received\n"
+        log_string << "#{@last_response[:header_string]}\n#{body_output}"
+        Eway.logger.debug log_string
       end
 
       def check_last_response_for_faults
-        faults = @last_response[:body_document].xpath('//soap:Fault', { 'soap' => @config['soap']['soap_namespace'] })
+        faults = @last_response[:body_document].xpath('//soap:Fault', { 'soap' => Eway.config['client']['soap_namespace'] })
         unless faults.empty?
           fault = faults.first
           fault_code = fault.xpath('faultcode').first.text

@@ -2,44 +2,11 @@ require File.dirname(__FILE__) + '/client'
 require File.dirname(__FILE__) + '/credit_card'
 
 module Eway
-  class << self
-    attr_accessor :credentials
-    attr_accessor :test_mode
-  end
-
   module TokenPayments
     class Customer
-      CUSTOMER_ATTRIBUTE_MAP = {
-        :managed_customer_id => :id,
-        :customer_ref => :reference,
-        :customer_title => :title,
-        :customer_first_name => :first_name,
-        :customer_last_name => :last_name,
-        :customer_company => :company,
-        :customer_job_desc => :job_description,
-        :customer_email => :email,
-        :customer_address => :address,
-        :customer_suburb => :suburb,
-        :customer_state => :state,
-        :customer_post_code => :post_code,
-        :customer_country => :country,
-        :customer_phone1 => :phone_1,
-        :customer_phone2 => :phone_2,
-        :customer_fax => :fax,
-        :customer_url => :url,
-        :customer_comments => :comments
-      }
-      CREDIT_CARD_PREFIX = 'cc_'
-      CREDIT_CARD_ATTRIBUTE_MAP = {
-        :cc_name => :name,
-        :cc_number => :number,
-        :cc_expiry_month => :expiry_month,
-        :cc_expiry_year => :expiry_year
-      }
-
       def initialize(attributes)
         @credit_card = CreditCard.new(attributes[:credit_card])
-        @attributes = attributes.reject { |k,v| k = :credit_card }
+        @attributes = attributes.reject { |k,v| k == :credit_card }
       end
 
       def save
@@ -74,10 +41,6 @@ module Eway
         return hash
       end
 
-      def to_s
-        return to_hash.inspect
-      end
-
       private
 
       def Customer.client
@@ -88,10 +51,13 @@ module Eway
         attributes = {}
         attributes[:credit_card] = {}
         response.each do |key, value|
-          if key.to_s.start_with?(CREDIT_CARD_PREFIX)
-            attributes[:credit_card][CREDIT_CARD_ATTRIBUTE_MAP[key]] = value
+          friendly_name = Eway.config['response_fields']['query_customer'][key]
+          cc_prefix = Eway.config['api']['credit_card_prefix']
+          if friendly_name.start_with?(cc_prefix)
+            new_key = friendly_name.gsub(cc_prefix, '').to_sym
+            attributes[:credit_card][new_key] = value
           else
-            attributes[CUSTOMER_ATTRIBUTE_MAP[key]] = value
+            attributes[friendly_name.to_sym] = value
           end
         end
         Customer.new(attributes)

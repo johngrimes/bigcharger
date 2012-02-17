@@ -1,0 +1,85 @@
+# Configuration parameters for the SOAP client
+client:
+  soap_namespace: http://schemas.xmlsoap.org/soap/envelope/
+  service_namespace: https://www.eway.com.au/gateway/managedpayment
+  endpoint: https://www.eway.com.au/gateway/ManagedPaymentService/managedCreditCardPayment.asmx
+  test_endpoint: https://www.eway.com.au/gateway/ManagedPaymentService/test/managedCreditCardPayment.asmx
+
+# Configuration parameters for the high-level API layer
+api:
+  credit_card_prefix: cc_
+
+# List of fields (with significant ordering) allowed within attributed 
+# request messages
+request_fields:
+  create_customer:
+    - Title
+    - FirstName
+    - LastName
+    - Address
+    - Suburb
+    - State
+    - Company
+    - PostCode
+    - Country
+    - Email
+    - Fax
+    - Phone
+    - Mobile
+    - CustomerRef
+    - JobDesc
+    - Comments
+    - URL
+    - CCNumber
+    - CCNameOnCard
+    - CCExpiryMonth
+    - CCExpiryYear
+  update_customer:
+    - Title
+    - FirstName
+    - LastName
+    - Address
+    - Suburb
+    - State
+    - Company
+    - PostCode
+    - Country
+    - Email
+    - Fax
+    - Phone
+    - Mobile
+    - CustomerRef
+    - JobDesc
+    - Comments
+    - URL
+    - CCNumber
+    - CCNameOnCard
+    - CCExpiryMonth
+    - CCExpiryYear
+
+# Mapping between fields in attributed responses and the friendly symbol 
+# names used in the API
+response_fields:
+  query_customer:
+    ManagedCustomerID: id
+    CustomerRef: reference
+    CustomerTitle: title
+    CustomerFirstName: first_name
+    CustomerLastName: last_name
+    CustomerCompany: company
+    CustomerJobDesc: job_description
+    CustomerEmail: email
+    CustomerAddress: address
+    CustomerSuburb: suburb
+    CustomerState: state
+    CustomerPostCode: post_code
+    CustomerCountry: country
+    CustomerPhone1: phone
+    CustomerPhone2: mobile
+    CustomerFax: fax
+    CustomerURL: url
+    CustomerComments: comments
+    CCName: cc_name
+    CCNumber: cc_number
+    CCExpiryMonth: cc_expiry_month
+    CCExpiryYear: cc_expiry_year
