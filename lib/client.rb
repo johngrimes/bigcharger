@@ -5,8 +5,6 @@ require 'logger'
 module Eway
   module TokenPayments
     class Client
-      attr_reader :config
-
       def initialize(customer_id, username, password, test_mode = false)
         @credentials = { 
           :customer_id => customer_id,
