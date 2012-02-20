@@ -1,10 +1,8 @@
 require File.dirname(__FILE__) + '/spec_helper'
-require File.dirname(__FILE__) + '/../lib/eway'
+require File.dirname(__FILE__) + '/../lib/bigcharger'
 
-require 'logger'
-
-describe Eway::TokenPayments::Client do
-  include ClientSpecHelpers
+describe BigCharger do
+  include BigChargerSpecHelpers
 
   before(:all) do
     @customer_id = '87654321'
@@ -12,9 +10,9 @@ describe Eway::TokenPayments::Client do
     @password = 'test123'
     @test_customer_id = '9876543211000'
     @test_customer_ref = 'Test 123'
-    @client = Eway::TokenPayments::Client.new(@customer_id, @username, @password)
-    @endpoint = Eway.config['client']['endpoint']
-    @namespace = Eway.config['client']['service_namespace']
+    @client = BigCharger.new(@customer_id, @username, @password)
+    @endpoint = BigCharger::ENDPOINT
+    @namespace = BigCharger::SERVICE_NAMESPACE
     
     # DEBUG
     # @client.logger = Logger.new(STDOUT)
@@ -94,7 +92,7 @@ describe Eway::TokenPayments::Client do
             )
         expect {
           @client.create_customer(@customer)
-        }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Login failed." (soap:Client)')
+        }.to raise_error(BigCharger::Error, 'eWAY server responded with "Login failed." (soap:Client)')
       end
 
       it 'should raise an error when the server returns a failure response code' do
@@ -104,7 +102,7 @@ describe Eway::TokenPayments::Client do
             )
         expect {
           @client.create_customer(@customer)
-        }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Bad Request" (400)')
+        }.to raise_error(BigCharger::Error, 'eWAY server responded with "Bad Request" (400)')
       end
     end
   end
@@ -168,7 +166,7 @@ describe Eway::TokenPayments::Client do
             )
         expect {
           @client.process_payment(@test_customer_id, @amount, @invoice_ref, @invoice_desc)
-        }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Login failed." (soap:Client)')
+        }.to raise_error(BigCharger::Error, 'eWAY server responded with "Login failed." (soap:Client)')
       end
 
       it 'should raise an error when the server returns a failure response code' do
@@ -178,7 +176,7 @@ describe Eway::TokenPayments::Client do
             )
         expect {
           @client.process_payment(@test_customer_id, @amount, @invoice_ref, @invoice_desc)
-        }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Bad Request" (400)')
+        }.to raise_error(BigCharger::Error, 'eWAY server responded with "Bad Request" (400)')
       end
     end
   end
@@ -243,7 +241,7 @@ describe Eway::TokenPayments::Client do
             )
         expect {
           @client.process_payment_with_cvn(@test_customer_id, @amount, @cvn, @invoice_ref, @invoice_desc)
-        }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Login failed." (soap:Client)')
+        }.to raise_error(BigCharger::Error, 'eWAY server responded with "Login failed." (soap:Client)')
       end
 
       it 'should raise an error when the server returns a failure response code' do
@@ -253,7 +251,7 @@ describe Eway::TokenPayments::Client do
             )
         expect {
           @client.process_payment_with_cvn(@test_customer_id, @amount, @cvn, @invoice_ref, @invoice_desc)
-        }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Bad Request" (400)')
+        }.to raise_error(BigCharger::Error, 'eWAY server responded with "Bad Request" (400)')
       end
     end
   end
@@ -328,7 +326,7 @@ describe Eway::TokenPayments::Client do
             )
         expect {
           @client.query_customer(@test_customer_id)
-        }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Login failed." (soap:Client)')
+        }.to raise_error(BigCharger::Error, 'eWAY server responded with "Login failed." (soap:Client)')
       end
 
       it 'should raise an error when the server returns a failure response code' do
@@ -338,7 +336,7 @@ describe Eway::TokenPayments::Client do
             )
         expect {
           @client.query_customer(@test_customer_id)
-        }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Bad Request" (400)')
+        }.to raise_error(BigCharger::Error, 'eWAY server responded with "Bad Request" (400)')
       end
     end
   end
@@ -413,7 +411,7 @@ describe Eway::TokenPayments::Client do
             )
         expect {
           @client.query_customer_by_reference(@test_customer_ref)
-        }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Login failed." (soap:Client)')
+        }.to raise_error(BigCharger::Error, 'eWAY server responded with "Login failed." (soap:Client)')
       end
 
       it 'should raise an error when the server returns a failure response code' do
@@ -423,7 +421,7 @@ describe Eway::TokenPayments::Client do
             )
         expect {
           @client.query_customer_by_reference(@test_customer_ref)
-        }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Bad Request" (400)')
+        }.to raise_error(BigCharger::Error, 'eWAY server responded with "Bad Request" (400)')
       end
     end
   end
@@ -487,7 +485,7 @@ describe Eway::TokenPayments::Client do
             )
         expect {
           @client.query_payment(@test_customer_id)
-        }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Login failed." (soap:Client)')
+        }.to raise_error(BigCharger::Error, 'eWAY server responded with "Login failed." (soap:Client)')
       end
 
       it 'should raise an error when the server returns a failure response code' do
@@ -497,7 +495,7 @@ describe Eway::TokenPayments::Client do
             )
         expect {
           @client.query_payment(@test_customer_id)
-        }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Bad Request" (400)')
+        }.to raise_error(BigCharger::Error, 'eWAY server responded with "Bad Request" (400)')
       end
     end
   end
@@ -576,7 +574,7 @@ describe Eway::TokenPayments::Client do
             )
         expect {
           @client.update_customer(@test_customer_id, @customer)
-        }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Login failed." (soap:Client)')
+        }.to raise_error(BigCharger::Error, 'eWAY server responded with "Login failed." (soap:Client)')
       end
 
       it 'should raise an error when the server returns a failure response code' do
@@ -586,7 +584,7 @@ describe Eway::TokenPayments::Client do
             )
         expect {
           @client.update_customer(@test_customer_id, @customer)
-        }.to raise_error(Eway::TokenPayments::Error, 'eWAY server responded with "Bad Request" (400)')
+        }.to raise_error(BigCharger::Error, 'eWAY server responded with "Bad Request" (400)')
       end
     end
   end

@@ -4,12 +4,9 @@ Bundler.setup(:default, :development)
 
 require 'webmock/rspec'
 
-# DEBUG
-require 'pry'
-
 WebMock.disable_net_connect!
 
-module ClientSpecHelpers
+module BigChargerSpecHelpers
   def message(name)
     file = File.open(File.join(File.dirname(__FILE__), "./messages/#{name.to_s}.xml"), 'rb')
     return file.read

@@ -1,4 +1,4 @@
-# eWAY SOAP Client - Token Payments API
+# BigCharger - eWAY Token Payments Client
 
 **Caution, watch your step - this is a work in progress.**
 
@@ -6,67 +6,71 @@ The idea of this project is to build a lightweight Ruby library for
 interfacing with the [eWAY Token Payments
 API](http://www.eway.com.au/Developer/eway-api/token-payments.aspx).
 
-The only other Ruby library out there for this (that I know of) consists
-of a [fork of the ActiveMerchant
-library](https://github.com/madpilot/active_merchant) that does not seem
-to be actively maintained. It also does not support all of the
-operations within the API.
-
 ## Setup
 
 ```ruby
-Eway.credentials = {
-  :customer_id => '87654321',
-  :username => 'test@eway.com.au',
-  :password => 'test123'
-}
+client = BigCharger.new(
+  '87654321', 
+  'test@eway.com.au', 
+  'test123', 
+  true,
+  Logger.new(STDOUT)
+)
 ```
 
 ## Create a new customer
 
 ```ruby
-customer = Eway::TokenPayments::Customer.create(
-  :reference => 'XYZ123',
-  :title => 'Mr',
-  :first_name => 'John',
-  :last_name => 'Doe',
-  :company => 'Small Spark',
-  :job_description => 'Software Developer',
-  :email => 'johndoe@smallspark.com.au',
-  :address => '15 Dundas Court',
-  :suburb => 'Phillip',
-  :state => 'ACT',
-  :post_code => '2606',
-  :country => 'Australia',
-  :phone_1 => '+61 2 1234 5678',
-  :phone_2 => '+61 4 1234 5678',
-  :fax => '+61 2 1234 5679',
-  :url => 'http://www.smallspark.com.au',
-  :comments => 'Our best customer!',
-  :credit_card => {
-    :name => 'John Doe',
-    :number => '1234567890123456',
-    :expiry_month => '02',
-    :expiry_year => '2012'
-  }
-)
+client.create_customer({
+  'CustomerRef' => 'Test 123',
+  'Title' => 'Mr.',
+  'FirstName' => 'Jo',
+  'LastName' => 'Smith',
+  'Company' => 'company',
+  'JobDesc' => 'Analyst',
+  'Email' => 'test@eway.com.au',
+  'Address' => '15 Dundas Court',
+  'Suburb' => 'phillip',
+  'State' => 'act',
+  'PostCode' => '2606',
+  'Country' => 'au',
+  'Phone' => '02111111111',
+  'Mobile' => '04111111111',
+  'Fax' => '111122222',
+  'URL' => 'http://eway.com.au',
+  'Comments' => 'Comments',
+  'CCNameOnCard' => 'Jo Smith',
+  'CCNumber' => '444433XXXXXX1111',
+  'CCExpiryMonth' => '08',
+  'CCExpiryYear' => '15'
+})
+# => "9876543211000" (managedCustomerID of new customer)
 ```
 
 ## Process a payment
 
 ```ruby
-customer.process_payment(
-  :amount => 1050,  # Amount in cents
-  :invoice_reference => 'INV-80251',
-  :invoice_description => 'Pants alteration'
+client.process_payment(
+  9876543211000,
+  1000,
+  'INV-80251',
+  'Pants alteration'
 )
+# => {
+#   'ewayTrxnError' => '00,Transaction Approved(Test Gateway)', 
+#   'ewayTrxnStatus' => 'True', 
+#   'ewayTrxnNumber' => '10498', 
+#   'ewayReturnAmount' => '1000', 
+#   'ewayAuthCode' => '123456'
+# }
 
-# Add CVN for extra security
-customer.process_payment(
-  :amount => 1050,  # Amount in cents
-  :invoice_reference => 'INV-80251',
-  :invoice_description => 'Pants alteration',
-  :cvn => '123'
+# Alternatively, improve security by requiring a CVN/CVV
+client.process_payment_with_cvn(
+  9876543211000,
+  1000,
+  '123',
+  'INV-80251',
+  'Pants alteration'
 )
 ```
 
@@ -74,30 +78,72 @@ customer.process_payment(
 
 ```ruby
 # Find a customer using the managed customer ID
-customer = Eway::TokenPayments::Customer.find(12345)
+client.query_customer(9876543211000)
+# => {
+#   'ManagedCustomerID' => '9876543211000', 
+#   'CustomerRef' => 'Test 123', 
+#   'CustomerTitle' => 'Mr.', 
+#   'CustomerFirstName' => 'Jo', 
+#   'CustomerLastName' => 'Smith', 
+#   'CustomerCompany' => 'company', 
+#   'CustomerJobDesc' => nil, 
+#   'CustomerEmail' => 'test@eway.com.au', 
+#   'CustomerAddress' => '15 Dundas Court', 
+#   'CustomerSuburb' => 'phillip', 
+#   'CustomerState' => 'act', 
+#   'CustomerPostCode' => '2606', 
+#   'CustomerCountry' => 'au', 
+#   'CustomerPhone1' => '02111111111', 
+#   'CustomerPhone2' => '04111111111', 
+#   'CustomerFax' => '111122222', 
+#   'CustomerURL' => 'http://eway.com.au', 
+#   'CustomerComments' => 'Comments', 
+#   'CCName' => 'Jo Smith', 
+#   'CCNumber' => '444433XXXXXX1111', 
+#   'CCExpiryMonth' => '08', 
+#   'CCExpiryYear' => '15'
+# }
 
 # Find a customer using the reference you supplied when you created the
 # customer
-customer = Eway::TokenPayments::Customer.find_by_reference('67890')
+client.query_customer_by_reference('Test 123')
 ```
 
 ## Get list of payments for a customer
 
 ```ruby
-payments = customer.payments
+client.query_payment(9876543211000)
+# => [
+#   {
+#     'TotalAmount' => '1000', 
+#     'Result' => '1', 
+#     'ResponseText' => 'Approved', 
+#     'TransactionDate' => '2012-02-20T00:00:00+11:00', 
+#     'ewayTrxnNumber' => '1'
+#   }, 
+#   {
+#     'TotalAmount' => '1008', 
+#     'Result' => '1', 
+#     'ResponseText' => 'Approved', 
+#     'TransactionDate' => '2012-02-20T00:00:00+11:00', 
+#     'ewayTrxnNumber' => '2'
+#   }
+# ]
 ```
 
 ## Update a customer
 
 ```ruby
-customer.update(
-  :credit_card => {
-    :name => 'John Doe',
-    :number => '0987654321098765',
-    :expiry_month => '02',
-    :expiry_year => '2018'
+client.update_customer(
+  9876543211000,
+  {
+    'CCNameOnCard' => 'Jo Smith',
+    'CCNumber' => '444433XXXXXX2222',
+    'CCExpiryMonth' => '06',
+    'CCExpiryYear' => '22'
   }
 )
+# => true
 ```
 
 Suggestions and criticisms are welcome, please feel free to send me a
