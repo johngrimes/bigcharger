@@ -3,8 +3,10 @@ require 'bundler'
 Bundler.setup(:default, :development)
 
 require 'webmock/rspec'
+require 'simplecov'
 
 WebMock.disable_net_connect!
+SimpleCov.start
 
 module BigChargerSpecHelpers
   def message(name)

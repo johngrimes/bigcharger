@@ -9,7 +9,7 @@ group :development do
   gem 'rspec'
   gem 'thor'
   gem 'webmock'
-  gem 'equivalent-xml'
+  gem 'simplecov'
 
   # Documentation
   gem 'yard'
