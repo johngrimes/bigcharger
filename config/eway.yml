@@ -11,30 +11,8 @@ api:
 
 # List of fields (with significant ordering) allowed within attributed 
 # request messages
-request_fields:
-  create_customer:
-    - Title
-    - FirstName
-    - LastName
-    - Address
-    - Suburb
-    - State
-    - Company
-    - PostCode
-    - Country
-    - Email
-    - Fax
-    - Phone
-    - Mobile
-    - CustomerRef
-    - JobDesc
-    - Comments
-    - URL
-    - CCNumber
-    - CCNameOnCard
-    - CCExpiryMonth
-    - CCExpiryYear
-  update_customer:
+field_ordering:
+  customer_request:
     - Title
     - FirstName
     - LastName
@@ -59,8 +37,30 @@ request_fields:
 
 # Mapping between fields in attributed responses and the friendly symbol 
 # names used in the API
-response_fields:
-  query_customer:
+field_mapping:
+  customer_request:
+    Title: title
+    FirstName: first_name
+    LastName: last_name
+    Address: address
+    Suburb: suburb
+    State: state
+    Company: company
+    PostCode: post_code
+    Country: country
+    Email: email
+    Fax: fax
+    Phone: phone
+    Mobile: mobile
+    CustomerRef: reference
+    JobDesc: job_description
+    Comments: comments
+    URL: url
+    CCNumber: cc_number
+    CCNameOnCard: cc_name
+    CCExpiryMonth: cc_expiry_month
+    CCExpiryYear: cc_expiry_year
+  query_customer_response:
     ManagedCustomerID: id
     CustomerRef: reference
     CustomerTitle: title

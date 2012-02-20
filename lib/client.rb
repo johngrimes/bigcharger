@@ -20,7 +20,7 @@ module Eway
         Eway.logger.debug "Eway::TokenPayments::Client#create_customer called with customer_fields = #{customer_fields.inspect}"
         envelope = wrap_in_envelope do |xml|
           xml['man'].CreateCustomer {
-            Eway.config['request_fields']['create_customer'].each do |field|
+            Eway.config['field_ordering']['customer_request'].each do |field|
               xml['man'].send(field, customer_fields[field]) if customer_fields[field]
             end
           }
@@ -102,7 +102,7 @@ module Eway
         envelope = wrap_in_envelope do |xml|
           xml['man'].UpdateCustomer {
             xml['man'].managedCustomerID managed_customer_id
-            Eway.config['request_fields']['update_customer'].each do |field|
+            Eway.config['field_ordering']['customer_request'].each do |field|
               xml['man'].send(field, customer_fields[field]) if customer_fields[field]
             end
           }

@@ -61,7 +61,8 @@ customer.process_payment(
   :invoice_description => 'Pants alteration'
 )
 
-customer.process_payment_with_cvn(
+# Add CVN for extra security
+customer.process_payment(
   :amount => 1050,  # Amount in cents
   :invoice_reference => 'INV-80251',
   :invoice_description => 'Pants alteration',

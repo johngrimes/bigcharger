@@ -4,6 +4,7 @@ require File.dirname(__FILE__) + '/credit_card'
 module Eway
   module TokenPayments
     class Customer
+
       def initialize(attributes)
         @credit_card = CreditCard.new(attributes[:credit_card])
         @attributes = attributes.reject { |k,v| k == :credit_card }
@@ -16,17 +17,16 @@ module Eway
       end
 
       def update(attributes)
+        request_fields = Customer.build_request(self)
+        Customer.client.update_customer(id, request_fields)
       end
 
       def process_payment(details)
       end
 
-      def process_payment_with_cvn(details)
-      end
-
-      def Customer.find(id)
-        response = Customer.client.query_customer(id)
-        Customer.response_to_customer(response)
+      def Customer.find(managed_customer_id)
+        response = Customer.client.query_customer(managed_customer_id)
+        Customer.translate_response(response)
       end
 
       def Customer.find_by_reference(reference)
@@ -47,7 +47,7 @@ module Eway
         @@client ||= Client.new(Eway.credentials[:customer_id], Eway.credentials[:username], Eway.credentials[:password], Eway.test_mode ? true : false)
       end
 
-      def Customer.response_to_customer(response)
+      def Customer.translate_response(response)
         attributes = {}
         attributes[:credit_card] = {}
         response.each do |key, value|
@@ -61,6 +61,20 @@ module Eway
           end
         end
         Customer.new(attributes)
+      end
+
+      def build_request
+        response = {}
+        field_mapping = Eway.config['field_mapping']['customer_request'].invert
+        @attributes.each do |key, value|
+          response_key = field_mapping[key]
+          response[response_key] = value
+        end
+        @credit_card.to_hash.each do |key, value|
+          response_key = field_mapping["#{Eway.config['api']['credit_card_prefix']}#{key}"]
+          response[response_key] = value
+        end
+        return response
       end
 
       def method_missing(name, *args)

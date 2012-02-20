@@ -5,7 +5,7 @@ class Eway < Thor
   include Thor::RakeCompat
 
   RSpec::Core::RakeTask.new(:spec) do |t|
-    t.rspec_opts = ['--options', 'spec/spec.opts']
+    t.rspec_opts = ['--options', '.rspec']
     t.pattern = 'spec/**/*_spec.rb'
   end 
 end
