@@ -4,6 +4,7 @@ require 'curb'
 class BigCharger
   def create_customer(customer_fields = {})
     log_operation(:create_customer, customer_fields)
+    raise Error, 'customer_fields is not a Hash' unless customer_fields.class == Hash
     envelope = wrap_in_envelope do |xml|
       xml['man'].CreateCustomer {
         CUSTOMER_REQUEST_FIELDS.each do |field|
@@ -85,6 +86,7 @@ class BigCharger
 
   def update_customer(managed_customer_id, customer_fields = {})
     log_operation(:update_customer, managed_customer_id, customer_fields)
+    raise Error, 'customer_fields is not a Hash' unless customer_fields.class == Hash
     envelope = wrap_in_envelope do |xml|
       xml['man'].UpdateCustomer {
         xml['man'].managedCustomerID managed_customer_id
