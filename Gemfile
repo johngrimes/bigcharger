@@ -2,7 +2,6 @@ source :rubygems
 
 gem 'nokogiri'
 gem 'curb'
-gem 'credit_card_validator'
 
 group :development do
   # Testing
@@ -14,7 +13,4 @@ group :development do
   # Documentation
   gem 'yard'
   gem 'redcarpet'
-
-  # Debugging
-  gem 'pry'
 end

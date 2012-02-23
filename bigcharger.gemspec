@@ -15,12 +15,13 @@ Gem::Specification.new do |s|
   s.test_files = Dir['{spec}/**/*']
   s.required_rubygems_version = Gem::Requirement.new('>= 1.3.6') if s.respond_to? :required_rubygems_version=
 
-  s.add_dependency 'createsend', '~> 0.2'
+  s.add_dependency 'nokogiri', '~> 1.5.0'
+  s.add_dependency 'curb', '~> 0.8.0'
 
-  s.add_development_dependency 'bundler', '~> 1'
-  s.add_development_dependency 'rspec-rails', '~> 2'
-  s.add_development_dependency 'mocha', '~> 0.9'
-  s.add_development_dependency 'cucumber-rails', '~> 0.3'
-  s.add_development_dependency 'webrat', '~> 0.7'
-  s.add_development_dependency 'nokogiri', '~> 1.4.3'
+  s.add_development_dependency 'rspec', '~> 2.7.0'
+  s.add_development_dependency 'thor', '~> 0.14.6'
+  s.add_development_dependency 'webmock', '~> 1.7.10'
+  s.add_development_dependency 'simplecov', '~> 0.5.4'
+  s.add_development_dependency 'yard', '~> 0.7.5'
+  s.add_development_dependency 'redcarpet', '~> 2.1.0'
 end
