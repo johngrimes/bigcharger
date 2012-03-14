@@ -6,7 +6,7 @@ gem 'curb'
 group :development do
   # Testing
   gem 'rspec'
-  gem 'thor'
+  gem 'rake'
   gem 'webmock'
   gem 'simplecov'
 
