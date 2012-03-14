@@ -1,10 +1,14 @@
 # BigCharger - eWAY Token Payments Client
 
-**Caution, watch your step - this is a work in progress.**
-
 The idea of this project is to build a lightweight Ruby library for
 interfacing with the [eWAY Token Payments
 API](http://www.eway.com.au/Developer/eway-api/token-payments.aspx).
+
+## Installation
+
+```ruby
+gem install bigcharger
+```
 
 ## Setup
 
@@ -12,9 +16,7 @@ API](http://www.eway.com.au/Developer/eway-api/token-payments.aspx).
 client = BigCharger.new(
   '87654321', 
   'test@eway.com.au', 
-  'test123', 
-  true,
-  Logger.new(STDOUT)
+  'test123'
 )
 ```
 
@@ -145,6 +147,3 @@ client.update_customer(
 )
 # => true
 ```
-
-Suggestions and criticisms are welcome, please feel free to send me a
-message.
