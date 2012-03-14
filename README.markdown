@@ -4,6 +4,9 @@ The idea of this project is to build a lightweight Ruby library for
 interfacing with the [eWAY Token Payments
 API](http://www.eway.com.au/Developer/eway-api/token-payments.aspx).
 
+Documentation: 
+[http://rubydoc.info/github/johngrimes/bigcharger/master/frames](http://rubydoc.info/github/johngrimes/bigcharger/master/frames)
+
 ## Installation
 
 ```ruby
