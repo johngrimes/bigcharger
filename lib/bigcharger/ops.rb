@@ -31,8 +31,8 @@ class BigCharger
   #   the corresponding  invoice within your system.
   # @param invoice_desc An optional field to describe the subject of the 
   #   payment.
-  # @return [Hash] ewayTrxnError, ewayTrxnStatus, ewayReturnAmount, 
-  #   ewayAuthCode
+  # @return [Hash] ewayTrxnError, ewayTrxnStatus, ewayTrxnNumber, 
+  #   ewayReturnAmount, ewayAuthCode
   def process_payment(managed_customer_id, amount, invoice_ref = nil, invoice_desc = nil)
     log_operation(:process_payment, managed_customer_id, amount, invoice_ref, invoice_desc)
     envelope = wrap_in_envelope do |xml|
