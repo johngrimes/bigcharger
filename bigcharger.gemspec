@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'curb', '~> 0.8.0'
 
   s.add_development_dependency 'rspec', '~> 2.7.0'
-  s.add_development_dependency 'thor', '~> 0.14.6'
+  s.add_development_dependency 'rake', '~> 0.14.6'
   s.add_development_dependency 'webmock', '~> 1.7.10'
   s.add_development_dependency 'simplecov', '~> 0.5.4'
   s.add_development_dependency 'yard', '~> 0.7.5'
