@@ -1,5 +1,7 @@
 # BigCharger - eWAY Token Payments Client
 
+IMPORTANT NOTE: This repository is no longer actively maintained.
+
 The idea of this project is to build a lightweight Ruby library for
 interfacing with the [eWAY Token Payments
 API](http://www.eway.com.au/Developer/eway-api/token-payments.aspx).
